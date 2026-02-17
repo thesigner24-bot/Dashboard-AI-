@@ -1,4 +1,3 @@
-
 export interface Alert {
   id: string;
   timestamp: string; // ISO string for sorting, display formatted
@@ -10,11 +9,11 @@ export interface Alert {
 }
 
 export enum Tab {
-  FEED = 'Feed',
+  FEED = 'Live Feed',
   ALERTS = 'Alerts (Active)',
   LIBRARY = 'Feed Library',
-  ANALYTICS = 'Analytics',
-  REPORT = 'Report'
+  AI_TOOLS = 'AI Workspace',
+  ANALYTICS = 'Analytics'
 }
 
 export interface Plant {
@@ -27,7 +26,6 @@ export interface Camera {
   name: string;
 }
 
-// Added for other views to fix missing export errors
 export enum AppTab {
   CHAT = 'Chat',
   IMAGE = 'Imaging',

@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Header } from './components/Header';
 import { ControlBar } from './components/ControlBar';
 import { AlertTable } from './components/AlertTable';
 import { FeedLibrary } from './components/FeedLibrary';
 import { FeedDashboard } from './components/FeedDashboard';
-import { Tab, Alert, Plant, Camera } from './types';
+import ChatView from './components/ChatView';
+import ImageView from './components/ImageView';
+import VideoView from './components/VideoView';
+import LiveView from './components/LiveView';
+import { Tab, Alert, Plant, Camera, AppTab } from './types';
 import { analyzeAlerts } from './services/geminiService';
-import { Info, BarChart3 } from 'lucide-react';
+import { Info, BarChart3, MessageSquare, Image, Film, Mic } from 'lucide-react';
 
 const MOCK_PLANTS: Plant[] = [
   { id: '1', name: 'Angul' },
@@ -47,34 +51,16 @@ const INITIAL_ALERTS: Alert[] = [
     message: 'Fine particles < 2mm exceeding 12% threshold.', 
     validation: null,
     imagePlaceholder: 'bg-slate-800'
-  },
-  { 
-    id: '4', 
-    timestamp: '2026-02-15T13:30:00', 
-    status: 'warning', 
-    issueType: 'Contamination', 
-    message: 'Possible foreign object (Wood/Plastic) detected with 85% confidence.', 
-    validation: 'rejected',
-    imagePlaceholder: 'bg-yellow-900'
-  },
-  { 
-    id: '5', 
-    timestamp: '2026-02-15T13:15:00', 
-    status: 'critical', 
-    issueType: 'Blockage Risk', 
-    message: 'Aggregate pile height > 45cm detected.', 
-    validation: null,
-    imagePlaceholder: 'bg-red-950'
   }
 ];
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<Tab>(Tab.ALERTS);
+  const [activeAiTab, setActiveAiTab] = useState<AppTab>(AppTab.CHAT);
   const [selectedPlant, setSelectedPlant] = useState(MOCK_PLANTS[0]);
   const [selectedCamera, setSelectedCamera] = useState(MOCK_CAMERAS[0]);
   const [alerts, setAlerts] = useState<Alert[]>(INITIAL_ALERTS);
   
-  // Gemini AI State
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -92,7 +78,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
       <Header 
         currentTab={currentTab}
         onTabChange={setCurrentTab}
@@ -104,15 +90,16 @@ export default function App() {
         onCameraChange={setSelectedCamera}
       />
 
-      <ControlBar 
-        onGenerateReport={handleGenerateReport}
-        isGenerating={isGenerating}
-      />
+      {currentTab !== Tab.AI_TOOLS && (
+        <ControlBar 
+          onGenerateReport={handleGenerateReport}
+          isGenerating={isGenerating}
+        />
+      )}
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8 overflow-hidden flex flex-col">
         
-        {/* AI Insight Box */}
-        {aiAnalysis && (
+        {aiAnalysis && currentTab !== Tab.AI_TOOLS && (
             <div className="mb-6 p-4 bg-indigo-50 border border-indigo-100 rounded-xl flex gap-4 animate-fadeIn">
                 <div className="p-2 bg-white rounded-full h-fit shadow-sm">
                     <BarChart3 className="w-5 h-5 text-indigo-600" />
@@ -130,37 +117,59 @@ export default function App() {
             </div>
         )}
 
-        {currentTab === Tab.FEED && (
-          <FeedDashboard mode="live" />
-        )}
+        {currentTab === Tab.FEED && <FeedDashboard mode="live" />}
 
-        {currentTab === Tab.ALERTS && (
-            <div className="space-y-6">
-                <AlertTable alerts={alerts} onValidation={handleValidation} />
+        {currentTab === Tab.ALERTS && <AlertTable alerts={alerts} onValidation={handleValidation} />}
+
+        {currentTab === Tab.LIBRARY && <FeedLibrary />}
+
+        {currentTab === Tab.AI_TOOLS && (
+          <div className="flex flex-1 bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden min-h-[700px]">
+            {/* AI Side Nav */}
+            <div className="w-20 md:w-64 bg-slate-900 flex flex-col border-r border-slate-800 transition-all">
+              <div className="p-6">
+                <h2 className="hidden md:block text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Intelligence Suite</h2>
+                <div className="space-y-2">
+                  <AiNavButton icon={<MessageSquare size={18}/>} label="AI Chat" active={activeAiTab === AppTab.CHAT} onClick={() => setActiveAiTab(AppTab.CHAT)} />
+                  <AiNavButton icon={<Image size={18}/>} label="Imaging" active={activeAiTab === AppTab.IMAGE} onClick={() => setActiveAiTab(AppTab.IMAGE)} />
+                  <AiNavButton icon={<Film size={18}/>} label="Video Studio" active={activeAiTab === AppTab.VIDEO} onClick={() => setActiveAiTab(AppTab.VIDEO)} />
+                  <AiNavButton icon={<Mic size={18}/>} label="Live Aura" active={activeAiTab === AppTab.LIVE} onClick={() => setActiveAiTab(AppTab.LIVE)} />
+                </div>
+              </div>
             </div>
-        )}
-
-        {currentTab === Tab.LIBRARY && (
-            <FeedLibrary />
+            
+            {/* AI Content Area */}
+            <div className="flex-1 overflow-y-auto bg-slate-50/30">
+              {activeAiTab === AppTab.CHAT && <ChatView />}
+              {activeAiTab === AppTab.IMAGE && <ImageView />}
+              {activeAiTab === AppTab.VIDEO && <VideoView />}
+              {activeAiTab === AppTab.LIVE && <LiveView />}
+            </div>
+          </div>
         )}
 
         {currentTab === Tab.ANALYTICS && (
             <div className="flex flex-col items-center justify-center h-96 text-slate-400">
                 <BarChart3 className="w-16 h-16 mb-4 opacity-50" />
                 <p className="text-lg">Analytics Dashboard Placeholder</p>
-                <p className="text-sm">Select 'Alerts' tab to view the main data table.</p>
+                <p className="text-sm">Extended historical reporting is available in AI Tools.</p>
             </div>
         )}
-
-         {(currentTab !== Tab.ALERTS && currentTab !== Tab.LIBRARY && currentTab !== Tab.ANALYTICS && currentTab !== Tab.FEED) && (
-            <div className="flex flex-col items-center justify-center h-96 text-slate-400">
-                <Info className="w-16 h-16 mb-4 opacity-50" />
-                <p className="text-lg">{currentTab} View</p>
-                <p className="text-sm">Under Construction</p>
-            </div>
-        )}
-
       </main>
     </div>
   );
 }
+
+const AiNavButton = ({ icon, label, active, onClick }: any) => (
+  <button 
+    onClick={onClick}
+    className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all group ${
+      active 
+      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
+      : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+    }`}
+  >
+    <div className="flex-shrink-0">{icon}</div>
+    <span className="hidden md:block font-medium text-sm">{label}</span>
+  </button>
+);
