@@ -68,7 +68,7 @@ export const AlertRow: React.FC<AlertRowProps> = ({ alert, onValidation }) => {
                className={`p-1.5 rounded-md transition-all ${
                 alert.validation === 'rejected' 
                   ? 'bg-red-100 text-red-700 ring-1 ring-red-600 border-transparent' 
-                  : 'text-slate-400 hover:text-red-600 border border-slate-200 hover:border-red-600'
+                  : 'text-slate-400 hover:text-red-600 border border-slate-200 hover:border-green-600'
               }`}
             >
               <ThumbsDown className={`w-4 h-4 ${alert.validation === 'rejected' ? 'fill-current' : ''}`} />
