@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ChevronDown, ThumbsUp, ThumbsDown, AlertCircle } from 'lucide-react';
 import { Alert } from '../types';
