@@ -1,5 +1,8 @@
 {
-  "name": "Copy of Copy of Copy of Coal Sizing Sentinel",
+  "name": "Coal Sizing Sentinel",
   "description": "High-fidelity industrial dashboard for monitoring coal particle sizing anomalies with AI-powered insights.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
 }

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, ThumbsUp, ThumbsDown, AlertCircle, AlertTriangle } from 'lucide-react';
 import { Alert } from '../types';
@@ -112,7 +113,7 @@ export const AlertRow: React.FC<AlertRowProps> = ({ alert, onValidation }) => {
                     <h4 className="text-sm font-semibold text-slate-900">Detailed Analysis</h4>
                     <div className="grid grid-cols-2 gap-4">
                          <div className="bg-white p-3 rounded border border-slate-200">
-                            <span className="text-xs text-slate-500 block mb-1">Oversize Fraction (>12mm)</span>
+                            <span className="text-xs text-slate-500 block mb-1">Oversize Fraction (&gt;12mm)</span>
                             <span className="text-lg font-bold text-red-600">6.8%</span>
                             <span className="text-xs text-slate-400 ml-2">(Limit: 2%)</span>
                          </div>
